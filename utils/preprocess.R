@@ -37,7 +37,7 @@ cols <- gsub(" ", "", cols)
 drop_list = c("UF", "CO_UF", "NO_ENTIDADE")
 schools <- schools[, !(names(schools) %in% drop_list)]
 
-# Rename Columns: "CO_MUNICIPIO" to "CO_MUNICIPALITY", "CO_ENTIDADE" to "CO_SCHOOL", "NU_AND_CENSO" to "CO_YEAR", "SIGLA" to "NAME_STATE", "MUNIC" to "NAME_MUNICIPALITY"
+# Rename Columns: "CO_MUNICIPIO" to "CO_MUNICIPALITY", "CO_ENTIDADE" to "CO_SCHOOL", "NU_ANO_CENSO" to "CO_YEAR", "SIGLA" to "NAME_STATE", "MUNIC" to "NAME_MUNICIPALITY"
 schools <- schools %>% dplyr::rename("CO_MUNICIPALITY" = "CO_MUNICIPIO", 'CO_SCHOOL' = 'CO_ENTIDADE', 'CO_YEAR' = 'NU_ANO_CENSO', 'NAME_STATE' = 'SIGLA', 'NAME_MUNICIPALITY' = 'MUNIC')
 
 # Perform an operation on each CO_SCHOOL - drop it if "STATUS" is 0 after ever being 1
