@@ -1,0 +1,8 @@
+"","strategy_name","outcome_name","schools_coherence"
+"1","science_lab","RATE_APROV",0.171773395420927
+"2","science_lab","RATE_ABANDON",0.26233687646812
+"3","science_lab","RATE_TRANSFER",0.0866406215292306
+"4","science_lab","PROVA_MEAN_PORT_I",0.291631648388716
+"5","science_lab","PROVA_MEAN_PORT_T",0.199596574103813
+"6","science_lab","PROVA_MEAN_MAT_I",0.406272421356019
+"7","science_lab","PROVA_MEAN_MAT_T",0.174341187516463

@@ -300,20 +300,4 @@ load("data/schools_processed.Rdata")
 # Figure out how jorge handles continuous variables
 
 ###############################################################################
-# Try w continuous variables first, and if they dont work, try single
-###############################################################################
-
-# Try running the program now
-
-install_github("g-vansh/STE")
-library(STE)
-
-ml_vars <- setdiff(ml_vars, grep("FC_HAS_SPORTS_QUAD", names(schools), value = TRUE))
-
-p_scores <- estimate_propensity(
-  treatment = schools$FC_HAS_SPORTS_QUAD,
-  X = schools[, ml_vars]
-)
-
-p_scores_sports_quad <- p_scores
-save(p_scores_sports_quad, file = "U:/Research/Thesis/thesis-brazil-schools-analysis/data/p_scores/p_scores_sports_quad.Rdata")
+# Try w continuous variables first, and if they dont work, try single variables
