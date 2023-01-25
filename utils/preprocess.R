@@ -27,7 +27,8 @@ library(lubridate)
 library(plyr)
 
 # Load Data
-setwd("G:/Other computers/My PC/Desktop/Cornell/Research/Thesis/Schools Analysis/thesis-brazil-schools-analysis")
+setwd("U:/Research/Thesis/Schools Analysis/thesis-brazil-schools-analysis")
+#setwd("G:/Other computers/My PC/Desktop/Cornell/Research/Thesis/Schools Analysis/thesis-brazil-schools-analysis")
 #schools <- read.csv("data/BrazilEduPanel_School.csv")
 #save(schools, file = "data/schools_raw.Rdata")
 load("data/schools_raw.Rdata")
@@ -307,12 +308,12 @@ load("data/schools_processed.Rdata")
 install_github("g-vansh/STE")
 library(STE)
 
-ml_vars <- setdiff(ml_vars, grep("FC_SCIENCE_LAB", names(schools), value = TRUE))
+ml_vars <- setdiff(ml_vars, grep("FC_HAS_SPORTS_QUAD", names(schools), value = TRUE))
 
 p_scores <- estimate_propensity(
-  treatment = schools$FC_SCIENCE_LAB,
+  treatment = schools$FC_HAS_SPORTS_QUAD,
   X = schools[, ml_vars]
 )
 
-p_scores_science_lab <- p_scores
-save(p_scores_science_lab, file = "data/p_scores/p_scores_science_lab.Rdata")
+p_scores_sports_quad <- p_scores
+save(p_scores_sports_quad, file = "U:/Research/Thesis/thesis-brazil-schools-analysis/data/p_scores/p_scores_sports_quad.Rdata")
