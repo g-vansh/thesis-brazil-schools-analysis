@@ -1,0 +1,8 @@
+"","strategy_name","outcome_name","schools_coherence"
+"1","internet","RATE_APROV",0.214715648003471
+"2","internet","RATE_ABANDON",0.055250032721031
+"3","internet","RATE_TRANSFER",0.110290734921765
+"4","internet","PROVA_MEAN_PORT_I",0.0871893723317125
+"5","internet","PROVA_MEAN_PORT_T",0.122448767715739
+"6","internet","PROVA_MEAN_MAT_I",0.0724830018085061
+"7","internet","PROVA_MEAN_MAT_T",0.0971098863813991

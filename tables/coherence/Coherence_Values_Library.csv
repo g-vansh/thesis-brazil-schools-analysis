@@ -1,0 +1,8 @@
+"","strategy_name","outcome_name","schools_coherence"
+"1","library","RATE_APROV",0.106429060676662
+"2","library","RATE_ABANDON",0.581678570860834
+"3","library","RATE_TRANSFER",0.15077450834004
+"4","library","PROVA_MEAN_PORT_I",0.841768473506438
+"5","library","PROVA_MEAN_PORT_T",0.884184073262358
+"6","library","PROVA_MEAN_MAT_I",0.923731943387799
+"7","library","PROVA_MEAN_MAT_T",0.158816664820682

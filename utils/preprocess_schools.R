@@ -301,18 +301,3 @@ load("data/schools_processed.Rdata")
 ###############################################################################
 # Try w continuous variables first, and if they dont work, try single
 ###############################################################################
-
-# Try running the program now
-
-install_github("g-vansh/STE")
-library(STE)
-
-ml_vars <- setdiff(ml_vars, grep("FC_SCIENCE_LAB", names(schools), value = TRUE))
-
-p_scores <- estimate_propensity(
-  treatment = schools$FC_SCIENCE_LAB,
-  X = schools[, ml_vars]
-)
-
-p_scores_science_lab <- p_scores
-save(p_scores_science_lab, file = "data/p_scores/p_scores_science_lab.Rdata")
