@@ -28,11 +28,8 @@ library(plyr)
 library(STE)
 
 # Load Data
-setwd("G:/Other computers/My PC/Desktop/Cornell/Research/Thesis/Schools Analysis/thesis-brazil-schools-analysis")
+setwd("U:/Research/Thesis/Schools Analysis/thesis-brazil-schools-analysis")
 load("data/municipalities_processed.Rdata")
-
-# Try internet next
-# Look at only private schools as well
 
 ################################################################################
 # Things that can be changed in the analysis:
@@ -41,18 +38,6 @@ load("data/municipalities_processed.Rdata")
 # 3. Subsetting only a certain kind of school which actually has agency 
 #    (we can avoid this by looking at literature and creatiing a strategy that
 #     is actually implementable by any schools)
-################################################################################
-
-################################################################################\
-# ONLY FOR P_SCORE GENERATION
-################################################################################
-# ml_vars <- setdiff(ml_vars, grep("FC_SCIENCE_LAB", names(schools), value = TRUE))
-# p_scores <- estimate_propensity(
-#   treatment = schools$FC_SCIENCE_LAB,
-#   X = schools[, ml_vars]
-# )
-# p_scores_science_lab <- p_scores
-# save(p_scores_science_lab, file = "data/p_scores/p_scores_science_lab.Rdata")
 ################################################################################
 
 # Create a function that performs all of the following steps for different outcomes and saves the histograms of the STEs and treatment effects, along with a dataframe of the coherence values for each outcome.
@@ -120,68 +105,19 @@ outcome_analyser <- function(outcome, strategy, propensity, municipality_outcome
   path <- paste("tables/", strategy_name, "/STE_Determinants_Municipalities/STE_Determinants_", outcome_name, ".csv", sep = "")
   write.csv(ste_features, path)
   print(paste("Processed outcome: ", outcome_name, sep = ""))
-  return(schools_coherence)
+  return(municipalities_coherence)
 }
   
-# a for loop that runs the above function for outcomes and saves the coherence values in a dataframe
-# coherence_values <- data.frame()
-# strategy <- schools$FC_INTERNET
-# load("data/p_scores/p_scores_internet.Rdata")
-# p_scores <- p_scores_internet
-# ml_vars <- setdiff(ml_vars, grep("FC_INTERNET", names(schools), value = TRUE))
-
-# Write the for loop
-# for(outcome_name in outcomes) {
-#   outcome <- sapply(schools_outcomes[[outcome_name]], as.numeric)
-#   strategy_name <- "internet"
-#   schools_coherence <- outcome_analyser(outcome, strategy, p_scores, schools_outcomes, schools, ml_vars, outcome_name, strategy_name)
-#   # Save coherence values with info on the outcome and strategy
-#   coherence_values <- rbind(coherence_values, data.frame(strategy_name, outcome_name, schools_coherence))
-# }
-# # Save coherence values in CSV file
-# write.csv(coherence_values, "tables/coherence/Coherence_Values_Internet.csv")
-
-# # Create a function that estimates the propensity score for a given strategy
-# create_p_scores <- function(strategy, municipalities, ml_vars) {
-#   # Estimate the propensity score for each strategy
-#   p_scores <- estimate_propensity(
-#     treatment = strategy,
-#     X = municipalities[, ml_vars]
-#   )
-#   return(p_scores)
-# }
-
-# # Create p-scores for each strategy
-# for(i in 1:length(strategies)) {
-#   ml_vars <- setdiff(ml_vars, grep(strategies[i], names(municipalities), value = TRUE))
-#   # A strategy is a variable that is 1 if the school is in the top 25% of municipalities in the dataset for that strategy
-#   strategy <- municipalities[[strategies[i]]]
-#   strategy <- ifelse(strategy > quantile(strategy, 0.75), 1, 0)  
-#   p_scores <- create_p_scores(strategy, municipalities, ml_vars)
-#   save(p_scores, file = paste0("data/p_scores/p_scores_", strategy_names[i], "_municipal.Rdata"))
-# }
-
-# for(i in 1:length(strategies)) {
-#   strategy <- municipalities[[strategies[i]]]
-#   strategy <- ifelse(strategy > quantile(strategy, 0.75), 1, 0)  
-#   load(paste0("data/p_scores/p_scores_", strategy_names[i], "_municipal.Rdata"))
-#   p_scores <- get(paste0("p_scores_", strategy_names[i]))
-#   ml_vars <- setdiff(ml_vars, grep(strategies[i], names(municipalities), value = TRUE))
-#   coherence_values <- data.frame()
-#   for(outcome_name in outcomes) {
-#     outcome <- sapply(municipalities_outcomes[[outcome_name]], as.numeric)
-#     municipalities_coherence <- outcome_analyser(outcome, strategy, p_scores, municipalities_outcomes, municipalities, ml_vars, outcome_name, strategy_names[i])
-#     # Save coherence values with info on the outcome and strategy
-#     coherence_values <- rbind(coherence_values, data.frame(strategy_names[i], outcome_name, municipalities_coherence))
-#   }
-#   # Save coherence values in CSV file
-#   write.csv(coherence_values, paste0("tables/coherence/Coherence_Values_", strategy_names[i], "_municipal.csv"))
-# }
-
 # Write a comprehensive function that runs the above analyses for multiple strategies, taking in a list of strategies and a list of strategy names as inputs with the dataframes being "municipalities" and "municipalities_outcomes" instead of "schools" and "schools_outcomes"
 # The function can use functions that have been already created.
 
 main <- function(strategies, strategy_names, municipalities, municipalities_outcomes, outcomes) {
+  # Create folders for strategy_names if they don't already exist
+  for(i in 1:length(strategy_names)) {
+    dir.create(paste0("plots/", strategy_names[i]), showWarnings = FALSE)
+    dir.create(paste0("tables/", strategy_names[i]), showWarnings = FALSE)
+  }
+
   # Create a function that estimates the propensity score for a given strategy
   create_p_scores <- function(strategy, municipalities, ml_vars) {
     # Estimate the propensity score for each strategy
@@ -193,25 +129,24 @@ main <- function(strategies, strategy_names, municipalities, municipalities_outc
   }
   
   # Create p-scores for each strategy
-  for(i in 1:length(strategies)) {
-    ml_vars <- setdiff(ml_vars, grep(strategies[i], names(municipalities), value = TRUE))
-    # A strategy is a variable that is 1 if the school is in the top 25% of municipalities in the dataset for that strategy
-    strategy <- municipalities[[strategies[i]]]
-    strategy <- ifelse(strategy > quantile(strategy, 0.75), 1, 0)  
-    p_scores <- create_p_scores(strategy, municipalities, ml_vars)
-    save(p_scores, file = paste0("data/p_scores/p_scores_", strategy_names[i], "_municipal.Rdata"))
-  }
+  # for(i in 1:length(strategies)) {
+  #   ml_vars_strategy <- setdiff(ml_vars, grep(strategies[i], names(municipalities), value = TRUE))
+  #   # A strategy is a variable that is 1 if the school is in the top 25% of municipalities in the dataset for that strategy
+  #   strategy <- municipalities[[strategies[i]]]
+  #   strategy <- ifelse(strategy > quantile(strategy, 0.75), 1, 0)  
+  #   p_scores <- create_p_scores(strategy, municipalities, ml_vars_strategy)
+  #   save(p_scores, file = paste0("data/p_scores/p_scores_", strategy_names[i], "_municipal.Rdata"))
+  # }
   
   for(i in 1:length(strategies)) {
     strategy <- municipalities[[strategies[i]]]
     strategy <- ifelse(strategy > quantile(strategy, 0.75), 1, 0)  
     load(paste0("data/p_scores/p_scores_", strategy_names[i], "_municipal.Rdata"))
-    p_scores <- get(paste0("p_scores_", strategy_names[i]))
-    ml_vars <- setdiff(ml_vars, grep(strategies[i], names(municipalities), value = TRUE))
+    ml_vars_strategy <- setdiff(ml_vars, grep(strategies[i], names(municipalities), value = TRUE))
     coherence_values <- data.frame()
     for(outcome_name in outcomes) {
       outcome <- sapply(municipalities_outcomes[[outcome_name]], as.numeric)
-      municipalities_coherence <- outcome_analyser(outcome, strategy, p_scores, municipalities_outcomes, municipalities, ml_vars, outcome_name, strategy_names[i])
+      municipalities_coherence <- outcome_analyser(outcome, strategy, p_scores, municipalities_outcomes, municipalities, ml_vars_strategy, outcome_name, strategy_names[i])
       # Save coherence values with info on the outcome and strategy
       coherence_values <- rbind(coherence_values, data.frame(strategy_names[i], outcome_name, municipalities_coherence))
     }
@@ -228,7 +163,16 @@ outcomes <- c("RATE_APROV", "RATE_ABANDON", "RATE_FAILURE",
               "RATE_APROV_PUB", "RATE_ABANDON_PUB", "RATE_FAILURE_PUB",
               "RATE_APROV_DIFF", "RATE_ABANDON_DIFF", "RATE_FAILURE_DIFF",
               "PROVA_MEAN_PORT_I", "PROVA_MEAN_PORT_T", "PROVA_MEAN_MAT_I", "PROVA_MEAN_MAT_T")
-strategies <- c("FC_INTERNET", "FC_LIBRARY", "FC_SCIENCE LAB")
-strategy_names <- c("internet", "library", "science_lab")
+strategies <- c("FC_SCIENCE_LAB", "STR_TEACHERS_ADVANCED_FUNDEDU",
+                "CLASS_SIZE", "CLASS_STUDENT_TEACHER_RATIO", "CH_SCHOOL_LARGE_SIZE",
+                "ST_TOTAL_STAFF", "CH_STATE", "CH_MUNICIPAL", "CH_PRIVATE", "CH_URBAN", 
+                "CH_RURAL", "FC_NUMBER_COMPUTERS")
+                
+strategy_names <- c("science_lab", "TEACHERS_ADVANCED_DEGREES",
+                    "CLASS_SIZE", "STUDENT_TEACHER_RATIO", "SCHOOL_LARGE_SIZE",
+                    "TOTAL_STAFF", "STATE_SCHOOL_CONC", "MUNICIPAL_SCHOOL_CONC", 
+                    "PRIVATE_SCHOOL_CONC", "URBAN_SCHOOL_CONC", 
+                    "RURAL_SCHOOL_CONC", "NUMBER_COMPUTERS")
+strategy_names <- tolower(strategy_names)
 
 main(strategies, strategy_names, municipalities, municipalities_outcomes, outcomes)

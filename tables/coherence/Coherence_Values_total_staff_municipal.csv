@@ -1,0 +1,14 @@
+"","strategy_names.i.","outcome_name","municipalities_coherence"
+"1","total_staff","RATE_APROV",0.0806988473730956
+"2","total_staff","RATE_ABANDON",0.0514138134225146
+"3","total_staff","RATE_FAILURE",0.0544186648031424
+"4","total_staff","RATE_APROV_PUB",0.0402697156851399
+"5","total_staff","RATE_ABANDON_PUB",0.0980718710570803
+"6","total_staff","RATE_FAILURE_PUB",0.043170849124367
+"7","total_staff","RATE_APROV_DIFF",0.907343085043299
+"8","total_staff","RATE_ABANDON_DIFF",0.481997831492691
+"9","total_staff","RATE_FAILURE_DIFF",0.0418103702228301
+"10","total_staff","PROVA_MEAN_PORT_I",1.32891652771977
+"11","total_staff","PROVA_MEAN_PORT_T",0.630972504550221
+"12","total_staff","PROVA_MEAN_MAT_I",0.955601200515715
+"13","total_staff","PROVA_MEAN_MAT_T",0.825266868575048

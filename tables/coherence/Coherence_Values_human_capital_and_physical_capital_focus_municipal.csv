@@ -1,0 +1,14 @@
+"","strategy_names.i.","outcome_name","municipalities_coherence"
+"1","human_capital_and_physical_capital_focus","RATE_APROV",0.0990895733570158
+"2","human_capital_and_physical_capital_focus","RATE_ABANDON",0.21851257216854
+"3","human_capital_and_physical_capital_focus","RATE_FAILURE",0.0937113549331585
+"4","human_capital_and_physical_capital_focus","RATE_APROV_PUB",0.0300351729550479
+"5","human_capital_and_physical_capital_focus","RATE_ABANDON_PUB",1.84739046365037
+"6","human_capital_and_physical_capital_focus","RATE_FAILURE_PUB",0.0950608104582726
+"7","human_capital_and_physical_capital_focus","RATE_APROV_DIFF",0.112361772744875
+"8","human_capital_and_physical_capital_focus","RATE_ABANDON_DIFF",0.0526883133217635
+"9","human_capital_and_physical_capital_focus","RATE_FAILURE_DIFF",0.131820492405595
+"10","human_capital_and_physical_capital_focus","PROVA_MEAN_PORT_I",0.19406070523306
+"11","human_capital_and_physical_capital_focus","PROVA_MEAN_PORT_T",0.640127590538671
+"12","human_capital_and_physical_capital_focus","PROVA_MEAN_MAT_I",0.195270005897966
+"13","human_capital_and_physical_capital_focus","PROVA_MEAN_MAT_T",2.08505872602281
