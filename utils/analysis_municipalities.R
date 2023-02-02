@@ -352,18 +352,6 @@ create_and_save_plots <- function(teffect_ste_df, strategy_names, outcomes){
   }
 }
 
-# Function to study multiple effects at once
-main <- function(strategy_names, municipalities, municipalities_outcomes, outcomes) {
-  # Get the propensity scores
-  p_scores <- get_p_scores(municipalities, municipalities_outcomes)
-
-  # Get the treatment effect and ste for each outcome and strategy
-  teffect_ste_df <- get_teffect_ste_df(outcomes, strategy_names, p_scores, municipalities)
-
-  # Plot the effect of all strategies on each outcome
-  create_and_save_plots(teffect_ste_df, strategy_names, outcomes)
-}
-
 # Function to create one datafram with all the treatment effects and ste for all strategies and outcomes
 create_teffect_ste_df <- function(strategy_names, municipalities, municipalities_outcomes, outcomes) {
   
@@ -381,5 +369,39 @@ create_teffect_ste_df <- function(strategy_names, municipalities, municipalities
   return(teffect_ste_df)
 }
 
+##############################
+# Modify municipalities_outcomes to create 8 new outcomes
+##############################
+
+# Outcomes 1 to 4: Standardized Prova Brasil scores (any column with "PROVA" in it)
+# Outcome 5: Average of "PROVA_MEAN_MAT_I" and "PROVA_MEAN_MAT_T"
+# Outcome 6: Average of "PROVA_MEAN_PORT_I" and "PROVA_MEAN_PORT_T"
+# Outcomes 7 and 8: Standardized versions of outcomes 5 and 6
+# Append these outcomes to municipalities_outcomes
+# All of the variables necessary to create these are available in municipalities_outcomes
+
+# Create a new dataframe with the standardized Prova Brasil scores
+municipalities_outcomes <- cbind(municipalities_outcomes, 
+                                 PROVA_MEAN_MAT_I_STD = (municipalities_outcomes$PROVA_MEAN_MAT_I - mean(municipalities_outcomes$PROVA_MEAN_MAT_I, na.rm = TRUE)) / sd(municipalities_outcomes$PROVA_MEAN_MAT_I, na.rm = TRUE),
+                                 PROVA_MEAN_MAT_T_STD = (municipalities_outcomes$PROVA_MEAN_MAT_T - mean(municipalities_outcomes$PROVA_MEAN_MAT_T, na.rm = TRUE)) / sd(municipalities_outcomes$PROVA_MEAN_MAT_T, na.rm = TRUE),
+                                 PROVA_MEAN_PORT_I_STD = (municipalities_outcomes$PROVA_MEAN_PORT_I - mean(municipalities_outcomes$PROVA_MEAN_PORT_I, na.rm = TRUE)) / sd(municipalities_outcomes$PROVA_MEAN_PORT_I, na.rm = TRUE),
+                                 PROVA_MEAN_PORT_T_STD = (municipalities_outcomes$PROVA_MEAN_PORT_T - mean(municipalities_outcomes$PROVA_MEAN_PORT_T, na.rm = TRUE)) / sd(municipalities_outcomes$PROVA_MEAN_PORT_T, na.rm = TRUE))
+
+# Create a new dataframe with the average of the Prova Brasil scores
+municipalities_outcomes <- cbind(municipalities_outcomes, 
+                                 PROVA_MEAN_MAT = (municipalities_outcomes$PROVA_MEAN_MAT_I + municipalities_outcomes$PROVA_MEAN_MAT_T) / 2,
+                                 PROVA_MEAN_PORT = (municipalities_outcomes$PROVA_MEAN_PORT_I + municipalities_outcomes$PROVA_MEAN_PORT_T) / 2)
+
+# Create a new dataframe with the standardized average of the Prova Brasil scores
+municipalities_outcomes <- cbind(municipalities_outcomes, 
+                                 PROVA_MEAN_MAT_STD = (municipalities_outcomes$PROVA_MEAN_MAT - mean(municipalities_outcomes$PROVA_MEAN_MAT, na.rm = TRUE)) / sd(municipalities_outcomes$PROVA_MEAN_MAT, na.rm = TRUE),
+                                 PROVA_MEAN_PORT_STD = (municipalities_outcomes$PROVA_MEAN_PORT - mean(municipalities_outcomes$PROVA_MEAN_PORT, na.rm = TRUE)) / sd(municipalities_outcomes$PROVA_MEAN_PORT, na.rm = TRUE))
+
+# Add new columns to the outcomes list
+outcomes <- c(outcomes, "PROVA_MEAN_MAT_I_STD", "PROVA_MEAN_MAT_T_STD", "PROVA_MEAN_PORT_I_STD", "PROVA_MEAN_PORT_T_STD", "PROVA_MEAN_MAT", "PROVA_MEAN_PORT", "PROVA_MEAN_MAT_STD", "PROVA_MEAN_PORT_STD")
+
+# Create a dataframe with the treatment effects and ste for all strategies and outcomes
 teffect_ste_df <- create_teffect_ste_df(strategy_names, municipalities, municipalities_outcomes, outcomes)
-# Func
+
+# Create plot pdfs
+create_and_save_plots(teffect_ste_df, strategy_names, outcomes)
