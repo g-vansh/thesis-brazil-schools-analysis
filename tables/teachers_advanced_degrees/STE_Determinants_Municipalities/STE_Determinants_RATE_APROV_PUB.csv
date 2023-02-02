@@ -1,0 +1,4 @@
+"","Variable","Coefficient","Coefficient/ATE"
+"1","ST_TEACHER_EDUCATION_YEARS",33.7512,-0.47
+"2","IN_CH_STATE_RJ_x_CH_FUNDAMENTAL_EDU_T",21.4062,-0.3
+"3","IN_CH_STATE_RJ_x_CH_URBAN",4.2986,-0.06

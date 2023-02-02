@@ -1,0 +1,14 @@
+"","strategy_names.i.","outcome_name","municipalities_coherence"
+"1","number_computers","RATE_APROV",0.0382386693638601
+"2","number_computers","RATE_ABANDON",0.0473623068914244
+"3","number_computers","RATE_FAILURE",0.0433428496350918
+"4","number_computers","RATE_APROV_PUB",0.0457356404925733
+"5","number_computers","RATE_ABANDON_PUB",0.0621692361861479
+"6","number_computers","RATE_FAILURE_PUB",0.0422309789970228
+"7","number_computers","RATE_APROV_DIFF",0.231830994061319
+"8","number_computers","RATE_ABANDON_DIFF",0.126279847494012
+"9","number_computers","RATE_FAILURE_DIFF",0.257683021989858
+"10","number_computers","PROVA_MEAN_PORT_I",0.0674992738956739
+"11","number_computers","PROVA_MEAN_PORT_T",0.0929298100884239
+"12","number_computers","PROVA_MEAN_MAT_I",0.061290415763765
+"13","number_computers","PROVA_MEAN_MAT_T",0.0893636932350617
