@@ -1,0 +1,103 @@
+  ############################################
+  # Estimate the main effects of the strategies using regressions
+  ############################################
+  # Estimate the main effects with fixed effects OLS regressions
+  library(sandwich)
+  library(glmnet)
+  library(lfe)
+  library(fixest)
+  library(stargazer)
+  
+  # Load the data
+  setwd("G:/Other computers/My PC/Desktop/Cornell/Research/Thesis/Schools Analysis/thesis-brazil-schools-analysis")
+  
+  load("data/schools_for_municipality_processing.Rdata")
+  rm(schools)
+  
+  # Keep only the CO_SCHOOL and CO_MUNICIPALITY columns in schools_info dataset
+  school_info <- school_info[, c("CO_SCHOOL", "NAME_STATE")]
+  
+  # Rename the CO_SCHOOL column to CO.SCHOOL, and CO_MUNICIPALITY to CO.MUNICIPALITY
+  names(school_info)[names(school_info) == "CO_SCHOOL"] <- "CO.SCHOOL"
+  names(school_info)[names(school_info) == "NAME_STATE"] <- "NAME.STATE"
+  
+  # Remove duplicates from the schools_info dataset
+  school_info <- school_info[!duplicated(school_info$CO.SCHOOL), ]
+  
+  data <- load("data/schools_OLS_cleaned.RData")
+  
+  # Merge the schools_info dataset with the schools dataset
+  schools <- merge(schools, school_info, by = "CO.SCHOOL")
+  rm(school_info)
+  
+  
+  
+  outcomes <- c("PROVA.MEAN.MAT", "PROVA.MEAN.PORT",
+                "PROVA.MEAN.MAT.I", "PROVA.MEAN.MAT.T",
+                "PROVA.MEAN.PORT.I", "PROVA.MEAN.PORT.T",
+                "RATE.APROV", "RATE.ABANDON", "RATE.FAILURE")
+  
+  strategy_names <- c("human.capital.focus", "physical.capital.focus", "human.capital.focus + physical.capital.focus + human.capital.focus:physical.capital.focus")
+  
+  regs_fe <- list()
+  
+  # Convert CH.SCHOOL.TYPE, CH.SCHOOL.LOCATION, and NAME.STATE to factors
+  schools$CH.SCHOOL.TYPE <- as.factor(schools$CH.SCHOOL.TYPE)
+  schools$CH.SCHOOL.LOCATION <- as.factor(schools$CH.SCHOOL.LOCATION)
+  schools$NAME.STATE <- as.factor(schools$NAME.STATE)
+  
+  for (outcome in outcomes) {
+    for (strategy in strategy_names) {
+      # Control for state here?
+      # formula <- paste0(outcome, " ~ ", strategy, "| NAME.STATE + CH.SCHOOL.TYPE")
+      formula <- paste0(outcome, " ~ ", strategy, "| CH.SCHOOL.TYPE + NAME.STATE | 0 | CO.MUNICIPALITY")
+      formula <- as.formula(formula)
+      regression <- felm(formula, data = schools)
+      regs_fe[[paste0(outcome, "...", strategy)]] <- regression
+    }
+  }
+  regs <- regs_fe
+  
+  # There are 3 outcome groups
+  # Group 1 (RATE.APROV, RATE.FAILURE, RATE.ABANDON)
+  # Group 2 (PROVA.MEAN.MAT, PROVA.MEAN.MAT.T, PROVA.MEAN.MAT.I)
+  # Group 3 (PROVA.MEAN.PORT, PROVA.MEAN.PORT.T, PROVA.MEAN.PORT.I)
+  # Create three tables, one for each outcome group, where each row is a strategy and each column is an outcome
+  # Use the summary function to print the results of the regressions
+  # Export the tables to latex using stargazer
+  
+  outcomes_groups <- c(
+      "RATE.APROV", "RATE.FAILURE", "RATE.ABANDON",
+      "PROVA.MEAN.MAT", "PROVA.MEAN.MAT.T", "PROVA.MEAN.MAT.I",
+      "PROVA.MEAN.PORT", "PROVA.MEAN.PORT.T", "PROVA.MEAN.PORT.I"
+  )
+  
+  regs_group1 <- list()
+  regs_group2 <- list()
+  regs_group3 <- list()
+  
+  for (outcome in outcomes_groups) {
+    for (strategy in strategy_names) {
+      if (outcome %in% c("RATE.APROV", "RATE.FAILURE", "RATE.ABANDON")) {
+        regs_group1[[paste0(outcome, "_", strategy)]] <- regs[[paste0(outcome, "...", strategy)]]
+      } else if (outcome %in% c("PROVA.MEAN.MAT", "PROVA.MEAN.MAT.T", "PROVA.MEAN.MAT.I")) {
+        regs_group2[[paste0(outcome, "_", strategy)]] <- regs[[paste0(outcome, "...", strategy)]]
+      } else {
+        regs_group3[[paste0(outcome, "_", strategy)]] <- regs[[paste0(outcome, "...", strategy)]]
+    }
+    }
+  }
+  
+  # Add labels to the tables
+  labels_group1 <- c("Approval Rate", "Failure Rate", "Abandonment Rate")
+  labels_group2 <- c("Math Scores", "Math Scores - Terminal", "Math Scores - Initial")
+  labels_group3 <- c("Portuguese Scores", "Portuguese Scores - Terminal", "Portuguese Scores - Initial")
+  
+  
+  # Update the strategy names to match the labels
+  strategy_names_labels <- c("Physical Capital Focus", "Human Capital Focus", "Human Capital Focus x Physical Capital Focus")
+  
+  # Groups 1 to 3
+  stargazer(regs_group1, type = "text", title = "Enrollment Outcomes", dep.var.labels = labels_group1, omit.stat = c("f", "ser", "rsq", "adj.rsq"), digits = 3, out = "tex/tables/regs_enrollment_fe.tex", covariate.labels = strategy_names_labels)
+  stargazer(regs_group2, type = "text", title = "Math Scores", dep.var.labels = labels_group2, omit.stat = c("f", "ser", "rsq", "adj.rsq"), digits = 3, out = "tex/tables/regs_math_fe.tex", covariate.labels = strategy_names_labels)
+  stargazer(regs_group3, type = "text", title = "Portuguese Scores", dep.var.labels = labels_group3, omit.stat = c("f", "ser", "rsq","adj.rsq"), digits = 3, out = "tex/tables/regs_port_fe.tex", covariate.labels = strategy_names_labels)

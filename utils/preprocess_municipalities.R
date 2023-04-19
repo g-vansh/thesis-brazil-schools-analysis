@@ -317,5 +317,7 @@ municipalities$RATE_APROV_DIFF <- municipalities$RATE_APROV_PUB - municipalities
 municipalities$RATE_FAILURE_DIFF <- municipalities$RATE_FAILURE_PUB - municipalities$RATE_FAILURE
 municipalities$RATE_ABANDON_DIFF <- municipalities$RATE_ABANDON_PUB - municipalities$RATE_ABANDON
 
+municipalities_outcomes <- municipalities %>% select(c(matches("PROVA|RATE"), "CO_MUNICIPALITY"))
+municipalities <- municipalities %>% select(-matches("PROVA|RATE"))
 
-save(municipalities, ml_vars, file = "data/municipalities_processed.Rdata")
+save(municipalities, municipalities_outcomes, ml_vars, file = "data/municipalities_processed.Rdata")

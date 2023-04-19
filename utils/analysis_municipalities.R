@@ -278,7 +278,7 @@ create_and_save_plots <- function(teffect_ste_df, strategy_names, outcomes){
   for (outcome in outcomes) {
     # Subset teffect_ste_df to only include the columns that have <outcome> in the name
     teffect_ste_df_outcome <- teffect_ste_df[, grep(outcome, names(teffect_ste_df))]
-
+    
     # Subset teffect_ste_df to only include the columns that have teffect in the name
     teffects_outcomes <- teffect_ste_df_outcome[, grep("teffect", names(teffect_ste_df_outcome))]
     ste_outcomes <- teffect_ste_df_outcome[, grep("ste", names(teffect_ste_df_outcome))]
@@ -286,11 +286,28 @@ create_and_save_plots <- function(teffect_ste_df, strategy_names, outcomes){
     # Convert the teffects_outcomes to a dataframe which has columns <strategy_name>
     teffects_outcomes <- as.data.frame(teffects_outcomes) 
     colnames(teffects_outcomes) <- strategy_names
-  
+    
     # Convert the ste_outcomes to a dataframe which has columns <strategy_name>
     ste_outcomes <- as.data.frame(ste_outcomes)
     colnames(ste_outcomes) <- strategy_names
-
+    x_lim <- FALSE
+    if (outcome == "PROVA_MEAN_MAT_STD"){
+      outcome_title <- "Math Scores"
+    }
+    else if (outcome == "PROVA_MEAN_MAT_STD"){
+      outcome_title <- "Portuguese Scores"
+    }
+    else if (outcome == "RATE_APROV_PUB"){
+      outcome_title <- "Pass Rates"
+    }
+    else if (outcome == "RATE_FAILURE_PUB"){
+      outcome_title <- "Failure Rates"
+      x_lim <- TRUE
+    }
+    else if (outcome == "RATE_ABANDON_PUB"){
+      outcome_title <- "Drop-Out Rates"
+      x_lim <- TRUE
+    }
     # Save the plots in a pdf file, with one PDF file per outcome
     # pdf(paste0("plots/PDF/", outcome, ".pdf"), width = 11, height = 8.5)
     # par(mfrow= c(2,2))
@@ -300,55 +317,70 @@ create_and_save_plots <- function(teffect_ste_df, strategy_names, outcomes){
     # Add a mean line to each histogram
     # Make the fill labels for each histogram the strategy name
     # Make the vline colored according to the strategy
-    plot_hist_teffect <- ggplot() +
-      geom_histogram(data = teffects_outcomes, aes(x = physical_capital_focus, fill = "Physical Capital Focus"), alpha = 0.5, na.rm = TRUE) +
-      geom_histogram(data = teffects_outcomes, aes(x = human_capital_focus, fill = "Human Capital Focus"), alpha = 0.5, na.rm = TRUE) +
-      geom_histogram(data = teffects_outcomes, aes(x = human_capital_and_physical_capital_focus, fill = "Human Capital and Physical Capital Focus"), alpha = 0.5, na.rm = TRUE) +
-      labs(title = paste("Treatment Effect of strategies on", outcome), x = "Treatment Effect", y = "Frequency") +
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_vline(data = teffects_outcomes, aes(xintercept = mean(physical_capital_focus, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1.1) +
-      geom_vline(data = teffects_outcomes, aes(xintercept = mean(human_capital_focus, na.rm = TRUE)), color = "red", linetype = "dashed", size = 1.1) +
-      geom_vline(data = teffects_outcomes, aes(xintercept = mean(human_capital_and_physical_capital_focus, na.rm = TRUE)), color = "green", linetype = "dashed", size = 1.1) +
-      scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) 
-
+    # plot_hist_teffect <- ggplot() +
+    #   geom_histogram(data = teffects_outcomes, aes(x = physical_capital_focus, fill = "Physical Capital Focus"), alpha = 0.5, na.rm = TRUE) +
+    #   geom_histogram(data = teffects_outcomes, aes(x = human_capital_focus, fill = "Human Capital Focus"), alpha = 0.5, na.rm = TRUE) +
+    #   geom_histogram(data = teffects_outcomes, aes(x = human_capital_and_physical_capital_focus, fill = "Human Capital and Physical Capital Focus"), alpha = 0.5, na.rm = TRUE) +
+    #   labs(title = paste("Treatment Effect of strategies on", outcome), x = "Treatment Effect", y = "Frequency") +
+    #   theme(plot.title = element_text(hjust = 0.5)) + 
+    #   geom_vline(data = teffects_outcomes, aes(xintercept = mean(physical_capital_focus, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1.1) +
+    #   geom_vline(data = teffects_outcomes, aes(xintercept = mean(human_capital_focus, na.rm = TRUE)), color = "red", linetype = "dashed", size = 1.1) +
+    #   geom_vline(data = teffects_outcomes, aes(xintercept = mean(human_capital_and_physical_capital_focus, na.rm = TRUE)), color = "green", linetype = "dashed", size = 1.1) +
+    #   scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) 
+    
+    if (x_lim){
+      plot_density_teffect <- ggplot() +
+        geom_density(data = teffects_outcomes, aes(x = physical_capital_focus, fill = "Physical Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
+        geom_density(data = teffects_outcomes, aes(x = human_capital_focus, fill = "Human Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
+        geom_density(data = teffects_outcomes, aes(x = human_capital_and_physical_capital_focus, fill = "Human Capital and Physical Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
+        labs(title = paste("Effect of Strategies on", outcome_title), x = "Effect", y = "Probability Density") +
+        theme(plot.title = element_text(hjust = 0.5)) + 
+        geom_vline(data = teffects_outcomes, aes(xintercept = mean(physical_capital_focus, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1.1) +
+        geom_vline(data = teffects_outcomes, aes(xintercept = mean(human_capital_focus, na.rm = TRUE)), color = "red", linetype = "dashed", size = 1.1) +
+        geom_vline(data = teffects_outcomes, aes(xintercept = mean(human_capital_and_physical_capital_focus, na.rm = TRUE)), color = "green", linetype = "dashed", size = 1.1) +
+        scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) + 
+        theme(legend.position = "bottom") + xlim(-2,2) + theme(text = element_text(size = 28)) + theme(legend.title=element_blank())
+    }
+    else{
     plot_density_teffect <- ggplot() +
       geom_density(data = teffects_outcomes, aes(x = physical_capital_focus, fill = "Physical Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
       geom_density(data = teffects_outcomes, aes(x = human_capital_focus, fill = "Human Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
       geom_density(data = teffects_outcomes, aes(x = human_capital_and_physical_capital_focus, fill = "Human Capital and Physical Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
-      labs(title = paste("Treatment Effect of strategies on", outcome), x = "Treatment Effect", y = "Frequency") +
+      labs(title = paste("Effect of Strategies on", outcome_title), x = "Effect", y = "Probability Density") +
       theme(plot.title = element_text(hjust = 0.5)) + 
       geom_vline(data = teffects_outcomes, aes(xintercept = mean(physical_capital_focus, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1.1) +
       geom_vline(data = teffects_outcomes, aes(xintercept = mean(human_capital_focus, na.rm = TRUE)), color = "red", linetype = "dashed", size = 1.1) +
       geom_vline(data = teffects_outcomes, aes(xintercept = mean(human_capital_and_physical_capital_focus, na.rm = TRUE)), color = "green", linetype = "dashed", size = 1.1) +
-      scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) 
-  
-    plot_hist_ste <- ggplot() +
-      geom_histogram(data = ste_outcomes, aes(x = physical_capital_focus, fill = "Physical Capital Focus"), alpha = 0.5, na.rm = TRUE) +
-      geom_histogram(data = ste_outcomes, aes(x = human_capital_focus, fill = "Human Capital Focus"), alpha = 0.5, na.rm = TRUE) +
-      geom_histogram(data = ste_outcomes, aes(x = human_capital_and_physical_capital_focus, fill = "Human Capital and Physical Capital Focus"), alpha = 0.5, na.rm = TRUE) +
-      labs(title = paste("Strategic Treatment Effect of strategies on", outcome), x = "Strategic Treatment Effect", y = "Frequency") +
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_vline(data = ste_outcomes, aes(xintercept = mean(physical_capital_focus, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1.1) +
-      geom_vline(data = ste_outcomes, aes(xintercept = mean(human_capital_focus, na.rm = TRUE)), color = "red", linetype = "dashed", size = 1.1) +
-      geom_vline(data = ste_outcomes, aes(xintercept = mean(human_capital_and_physical_capital_focus, na.rm = TRUE)), color = "green", linetype = "dashed", size = 1.1) +
-      scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) 
-  
-    plot_density_ste <- ggplot() +
-      geom_density(data = ste_outcomes, aes(x = physical_capital_focus, fill = "Physical Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
-      geom_density(data = ste_outcomes, aes(x = human_capital_focus, fill = "Human Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
-      geom_density(data = ste_outcomes, aes(x = human_capital_and_physical_capital_focus, fill = "Human Capital and Physical Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
-      labs(title = paste("Strategic Treatment Effect of strategies on", outcome), x = "Strategic Treatment Effect", y = "Frequency") +
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_vline(data = ste_outcomes, aes(xintercept = mean(physical_capital_focus, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1.1) +
-      geom_vline(data = ste_outcomes, aes(xintercept = mean(human_capital_focus, na.rm = TRUE)), color = "red", linetype = "dashed", size = 1.1) +
-      geom_vline(data = ste_outcomes, aes(xintercept = mean(human_capital_and_physical_capital_focus, na.rm = TRUE)), color = "green", linetype = "dashed", size = 1.1) +
-      scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) 
+      scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) + 
+      theme(legend.position = "bottom") + theme(text = element_text(size = 28)) + theme(legend.title=element_blank())
+    }
+    # plot_hist_ste <- ggplot() +
+    #   geom_histogram(data = ste_outcomes, aes(x = physical_capital_focus, fill = "Physical Capital Focus"), alpha = 0.5, na.rm = TRUE) +
+    #   geom_histogram(data = ste_outcomes, aes(x = human_capital_focus, fill = "Human Capital Focus"), alpha = 0.5, na.rm = TRUE) +
+    #   geom_histogram(data = ste_outcomes, aes(x = human_capital_and_physical_capital_focus, fill = "Human Capital and Physical Capital Focus"), alpha = 0.5, na.rm = TRUE) +
+    #   labs(title = paste("Strategic Treatment Effect of strategies on", outcome), x = "Strategic Treatment Effect", y = "Frequency") +
+    #   theme(plot.title = element_text(hjust = 0.5)) + 
+    #   geom_vline(data = ste_outcomes, aes(xintercept = mean(physical_capital_focus, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1.1) +
+    #   geom_vline(data = ste_outcomes, aes(xintercept = mean(human_capital_focus, na.rm = TRUE)), color = "red", linetype = "dashed", size = 1.1) +
+    #   geom_vline(data = ste_outcomes, aes(xintercept = mean(human_capital_and_physical_capital_focus, na.rm = TRUE)), color = "green", linetype = "dashed", size = 1.1) +
+    #   scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) 
+    # 
+    # plot_density_ste <- ggplot() +
+    #   geom_density(data = ste_outcomes, aes(x = physical_capital_focus, fill = "Physical Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
+    #   geom_density(data = ste_outcomes, aes(x = human_capital_focus, fill = "Human Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
+    #   geom_density(data = ste_outcomes, aes(x = human_capital_and_physical_capital_focus, fill = "Human Capital and Physical Capital Focus"), alpha = 0.5, position = "identity", na.rm = TRUE) +
+    #   labs(title = paste("Strategic Treatment Effect of strategies on", outcome), x = "Strategic Treatment Effect", y = "Frequency") +
+    #   theme(plot.title = element_text(hjust = 0.5)) + 
+    #   geom_vline(data = ste_outcomes, aes(xintercept = mean(physical_capital_focus, na.rm = TRUE)), color = "blue", linetype = "dashed", size = 1.1) +
+    #   geom_vline(data = ste_outcomes, aes(xintercept = mean(human_capital_focus, na.rm = TRUE)), color = "red", linetype = "dashed", size = 1.1) +
+    #   geom_vline(data = ste_outcomes, aes(xintercept = mean(human_capital_and_physical_capital_focus, na.rm = TRUE)), color = "green", linetype = "dashed", size = 1.1) +
+    #   scale_fill_manual(values = c("Physical Capital Focus" = "blue", "Human Capital Focus" = "red", "Human Capital and Physical Capital Focus" = "green")) 
     
     # Use ggarrange to arrange the plots in a grid
-    ggarrange(plot_hist_teffect, plot_hist_ste, plot_density_teffect, plot_density_ste, ncol = 2, nrow = 2)
-
+    # ggarrange(plot_hist_teffect, plot_hist_ste, plot_density_teffect, plot_density_ste, ncol = 2, nrow = 2)
+    
     # Save the plot as a pdf file
-    ggsave(paste("plots/PDF/", outcome, "_teffect_ste.pdf", sep = ""), width = 20, height = 12.5)
+    ggsave(paste("plots/PDF/Final/", outcome, "_teffect_ste.png", sep = ""), width = 20, height = 12.5)
   }
 }
 
@@ -400,8 +432,12 @@ municipalities_outcomes <- cbind(municipalities_outcomes,
 # Add new columns to the outcomes list
 outcomes <- c(outcomes, "PROVA_MEAN_MAT_I_STD", "PROVA_MEAN_MAT_T_STD", "PROVA_MEAN_PORT_I_STD", "PROVA_MEAN_PORT_T_STD", "PROVA_MEAN_MAT", "PROVA_MEAN_PORT", "PROVA_MEAN_MAT_STD", "PROVA_MEAN_PORT_STD")
 
+outcomes <- c("PROVA_MEAN_MAT_STD", "PROVA_MEAN_PORT_STD", "RATE_APROV_PUB", "RATE_FAILURE_PUB", "RATE_ABANDON_PUB")
+
+
 # Create a dataframe with the treatment effects and ste for all strategies and outcomes
 teffect_ste_df <- create_teffect_ste_df(strategy_names, municipalities, municipalities_outcomes, outcomes)
+
 
 # Create plot pdfs
 create_and_save_plots(teffect_ste_df, strategy_names, outcomes)
